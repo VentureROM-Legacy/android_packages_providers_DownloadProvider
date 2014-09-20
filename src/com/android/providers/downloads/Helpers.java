@@ -28,6 +28,7 @@ import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -351,8 +352,9 @@ public class Helpers {
     /**
      * Checks whether the filename looks legitimate
      */
-    static boolean isFilenameValid(String filename, File downloadsDataDir) {
+    static boolean isFilenameValid(Context context, String filename, File downloadsDataDir) {
         final String[] whitelist;
+        final List<String> secondaryStoragePaths = StorageManager.getSecondaryStoragePaths(context);
         try {
             filename = new File(filename).getCanonicalPath();
             whitelist = new String[] {
@@ -366,6 +368,12 @@ public class Helpers {
         }
 
         for (String test : whitelist) {
+            if (filename.startsWith(test)) {
+                return true;
+            }
+        }
+
+        for (String test : secondaryStoragePaths) {
             if (filename.startsWith(test)) {
                 return true;
             }
